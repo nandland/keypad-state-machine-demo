@@ -21,12 +21,18 @@ module keypad_state_machine_demo_top
   output o_Segment1_E,
   output o_Segment1_F,
   output o_Segment1_G,
+ 
+  // Switch Input (Used to reset the internal state machine)
+  input i_Switch_1,
+
   // LED Outputs
   output o_LED_1,
   output o_LED_2, 
   output o_LED_3,
   output o_LED_4);
 
+reg [3:0] r_Decode_Out;
+reg r_Decode_DV;
 wire [3:0] w_Decode_Out;
 wire [3:0] w_Row, w_Col;
 wire w_Segment1_A;
@@ -47,6 +53,26 @@ assign io_PMOD_2 = w_Col[1];
 assign io_PMOD_3 = w_Col[2];
 assign io_PMOD_4 = w_Col[3];
 
+always @(posedge i_Clk)
+begin
+  r_Decode_Out <= w_Decode_Out;
+
+  if (r_Decode_Out != w_Decode_Out)
+  begin
+    r_Decode_DV <= 1'b1;
+  end
+  else 
+  begin
+    r_Decode_DV <= 1'b0;
+  end
+
+end
+
+  // Note: Alternative method of generating data-valid pulse
+  // This would create a DV pulse 1 clock cycle earlier than r_Decode_DV
+  // assign w_Decode_DV = (r_Decode_Out != w_Decode_Out);
+
+
 // Decoder communicates with the KEYPAD to pull in decoded digit
 Decoder Decoder_Inst
  (.clk(i_Clk),
@@ -54,6 +80,15 @@ Decoder Decoder_Inst
   .Col(w_Col),   // output
   .DecodeOut(w_Decode_Out));
 
+
+state_machine safe_password_checker_inst
+ (.i_Clk(i_Clk),       // Main Clock
+  .i_Reset(i_Switch_1),
+  .i_Keypad_DV(r_Decode_DV),
+  .i_Keypad_Digit(w_Decode_Out),
+  .o_Safe_Unlocked(o_LED_1),
+  .o_Safe_Locked(o_LED_4)
+  );
 
   // Binary to 7-Segment Converter for Upper Digit
   Binary_To_7Segment SevenSeg1_Inst

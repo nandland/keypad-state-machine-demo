@@ -5,6 +5,7 @@
 add_file -verilog -lib work "../Binary_To_7Segment.v" 
 add_file -verilog -lib work "../Decoder.v" 
 add_file -verilog -lib work "../keypad_state_machine_demo_top.v" 
+add_file -verilog -lib work "../state_machine.v" 
 add_file -constraint -lib work "Go_Board_Clock_Constraint.sdc"
 #implementation: "keypad_demo_Implmnt"
 impl -add keypad_demo_Implmnt -type fpga
