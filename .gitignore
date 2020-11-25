@@ -1,7 +1,7 @@
 *.v~
 *.sv~
 *.vhd~
-build/keypad-state-machine-demo/*
+build/keypad_demo_Implmnt/*
 build/licbug.txt
 build/stdout.log
 build/synlog.tcl
